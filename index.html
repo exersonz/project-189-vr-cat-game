@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>VR Cat Game</title>
+        <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+        <script src="https://unpkg.com/aframe-event-set-component@4.2.1/dist/aframe-event-set-component.min.js"></script>
+
+        <!-- The core Firebase JS SDK is always required and must be listed first -->
+        <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-firestore.js"></script>
+
+        <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-analytics.js"></script>
+
+        <script>
+            //Your web app's Firebase configuration
+            const firebaseConfig = {
+                apiKey: "AIzaSyD9AKGmmeu-FuLch2og5UX57tKELzqvrFs",
+                authDomain: "vr-cat-game.firebaseapp.com",
+                projectId: "vr-cat-game",
+                storageBucket: "vr-cat-game.appspot.com",
+                messagingSenderId: "190987433554",
+                appId: "1:190987433554:web:baad067023db82fa38d18b"
+            };
+
+            //Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            firebase.analytics();
+        </script>
+
+        <script src="addElements.js"></script>
+        <script src="clickEvents.js"></script>
+
+        <link rel="stylesheet" type="text/css" href="style.css">
+    </head>
+
+    <body>
+        <a-scene id="mainScene" add-element>
+            <a-sky color="#e8dcbc"></a-sky>
+            
+            <!-- Camera -->
+            <a-camera id="camera">
+                <a-image id="custom_cursor" src="https://raw.githubusercontent.com/exersonz/vr-cat-game-assets/main/hand.png" position="0 0 -1" width="0.15" height="0.15"></a-image>
+            </a-camera>
+
+            <a-entity id="toolsContainer">
+                <a-image id="feed" src="https://raw.githubusercontent.com/exersonz/vr-cat-game-assets/main/food.png"></a-image>
+                <a-image id="bathe" src="https://raw.githubusercontent.com/exersonz/vr-cat-game-assets/main/bathe.png"></a-image>
+                <a-image id="groom" src="https://raw.githubusercontent.com/exersonz/vr-cat-game-assets/main/groom.png"></a-image>
+            </a-entity>
+        </a-scene>
+    </body>
+</html>
