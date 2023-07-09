@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta charset="utf-8">
         <title>VR Cat Game</title>
+
+        <!-- A-Frame Library and Event Set Component Library -->
         <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
         <script src="https://unpkg.com/aframe-event-set-component@4.2.1/dist/aframe-event-set-component.min.js"></script>
 
@@ -38,14 +41,14 @@
             <a-sky color="#e8dcbc"></a-sky>
             
             <!-- Camera -->
-            <a-camera id="camera">
+            <a-camera id="camera" position="0 1.5 0" near="0.1" far="100">
                 <a-image id="custom_cursor" src="https://raw.githubusercontent.com/exersonz/vr-cat-game-assets/main/hand.png" position="0 0 -1" width="0.15" height="0.15"></a-image>
             </a-camera>
 
             <a-entity id="toolsContainer">
-                <a-image id="feed" src="https://raw.githubusercontent.com/exersonz/vr-cat-game-assets/main/food.png"></a-image>
-                <a-image id="bathe" src="https://raw.githubusercontent.com/exersonz/vr-cat-game-assets/main/bathe.png"></a-image>
-                <a-image id="groom" src="https://raw.githubusercontent.com/exersonz/vr-cat-game-assets/main/groom.png"></a-image>
+                <a-entity id="feed" geometry="primitive: plane; width: 0.5; height: 0.5" material="src: https://raw.githubusercontent.com/exersonz/vr-cat-game-assets/main/food.png; transparent: true; alphaTest: 0.5" position="1.2 0.53 -1.8" cursor-listener></a-entity>
+                <a-entity id="bathe" geometry="primitive: plane; width: 0.5; height: 0.5" material="src: https://raw.githubusercontent.com/exersonz/vr-cat-game-assets/main/bathe.png; transparent: true; alphaTest: 0.5" position="1.7 0.53 -1.8" cursor-listener></a-entity>
+                <a-entity id="groom" geometry="primitive: plane; width: 0.5; height: 0.5" material="src: https://raw.githubusercontent.com/exersonz/vr-cat-game-assets/main/groom.png; transparent: true; alphaTest: 0.5" position="2.2 0.53 -1.8" cursor-listener></a-entity>
             </a-entity>
         </a-scene>
     </body>
