@@ -4,9 +4,10 @@
         <meta charset="utf-8">
         <title>VR Cat Game</title>
 
-        <!-- A-Frame Library and Event Set Component Library -->
         <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
         <script src="https://unpkg.com/aframe-event-set-component@4.2.1/dist/aframe-event-set-component.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/n5ro/aframe-physics-system@v4.0.1/dist/aframe-physics-system.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
 
         <!-- The core Firebase JS SDK is always required and must be listed first -->
         <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-app.js"></script>
@@ -30,26 +31,40 @@
             firebase.analytics();
         </script>
 
-        <script src="addElements.js"></script>
-        <script src="clickEvents.js"></script>
+        <script src="./js/addElements.js"></script>
+        <script src="./js/activateTool.js"></script>
+        <script src="./js/toolFunction.js"></script>
 
-        <link rel="stylesheet" type="text/css" href="style.css">
+        <script src="./howler/howler.min.js"></script>
     </head>
 
     <body>
         <a-scene id="mainScene" add-element>
-            <a-sky color="#e8dcbc"></a-sky>
+            <script>
+                AFRAME.registerComponent("play-music", {
+                    init: function(){
+                        var sound = new Howl({
+                            src: ['./assets/bg_music.mp3'],
+                            autoplay: true,
+                            loop: true,
+                            volume: 1
+                        });
+                        sound.play();
+                    }
+                });
+            </script>
+
+            <!-- Sounds -->
+            <a-entity play-music></a-entity>
+
+            <!-- Kitty Treats -->
+            <a-entity feed></a-entity>
             
             <!-- Camera -->
-            <a-camera id="camera" position="0 1.5 0" near="0.1" far="100">
+            <a-camera id="camera" position="0 1.3 0" create-buttons>
                 <a-image id="custom_cursor" src="https://raw.githubusercontent.com/exersonz/vr-cat-game-assets/main/hand.png" position="0 0 -1" width="0.15" height="0.15"></a-image>
+                <a-entity id="actionContainer" activate-tool add-tool></a-entity>
             </a-camera>
-
-            <a-entity id="toolsContainer">
-                <a-entity id="feed" geometry="primitive: plane; width: 0.5; height: 0.5" material="src: https://raw.githubusercontent.com/exersonz/vr-cat-game-assets/main/food.png; transparent: true; alphaTest: 0.5" position="1.2 0.53 -1.8" cursor-listener></a-entity>
-                <a-entity id="bathe" geometry="primitive: plane; width: 0.5; height: 0.5" material="src: https://raw.githubusercontent.com/exersonz/vr-cat-game-assets/main/bathe.png; transparent: true; alphaTest: 0.5" position="1.7 0.53 -1.8" cursor-listener></a-entity>
-                <a-entity id="groom" geometry="primitive: plane; width: 0.5; height: 0.5" material="src: https://raw.githubusercontent.com/exersonz/vr-cat-game-assets/main/groom.png; transparent: true; alphaTest: 0.5" position="2.2 0.53 -1.8" cursor-listener></a-entity>
-            </a-entity>
         </a-scene>
     </body>
 </html>
