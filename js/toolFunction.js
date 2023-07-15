@@ -1,43 +1,96 @@
 AFRAME.registerComponent("feed", {
-    init: function(){
-        this.feed();
-    },
-    feed: function(){
-        window.addEventListener("keydown", (e) => {
-            if(e.key === 't'){
-                var kittyTreat = document.createElement("a-entity");
-                kittyTreat.setAttribute("geometry", {
-                    primitive: "sphere",
-                    radius: 0.05
-                });
-                kittyTreat.setAttribute("material", "color", "#8f6d50");
-                kittyTreat.setAttribute("position", {x: 0, y: 1, z: -0.8});
+    init: function () {
+      this.handleKeyPress();
 
-                var camera = document.querySelector("#camera").object3D;
-                
-                // getting camera direction as Three.js vector
-                var direction = new THREE.Vector3();
-                camera.getWorldDirection(direction);
+      // initializing the lastKeyPressTime property
+      this.lastKeyPressTime = null;
 
-                // setting velocity and its direction
-                kittyTreat.setAttribute("velocity", direction.multiplyScalar(-5));
+      // declaring a variable to hold reference to the interval
+      this.meowSoundInterval = null;
+      this.angryMeowSoundInterval = null;
 
-                var mainScene = document.querySelector("#mainScene")
+      setInterval(() => {
+        if(this.lastKeyPressTime !== null){
+            var currentTime = Date.now();
+            var elapsedTime = currentTime - this.lastKeyPressTime;
 
-                // setting kitty treat as a dynamic body
-                kittyTreat.setAttribute("dynamic-body", {
-                    shape: "sphere",
-                    mass: "0"
-                });
+            // defining threshold duration in milliseconds
+            var threshold = 120000;
 
-                // adding collide event with kitty treat
-                kittyTreat.addEventListener("collide", (e) => {
-                    this.removeTreat(e);
-                });
+            // checking if elapsed time > threshold
+            if(elapsedTime > threshold){                
+                if(!this.angryMeowSoundInterval){
+                    this.angryMeowSoundInterval = setInterval(this.angryMeow, 5000);
+                }
 
-                mainScene.appendChild(kittyTreat);
+                document.querySelector("#upset_kitty").setAttribute("visible", true);
+                document.querySelector("#main_kitty").setAttribute("visible", false);
             }
-        });
+            else{
+                document.querySelector("#upset_kitty").setAttribute("visible", false);
+                document.querySelector("#main_kitty").setAttribute("visible", true);  
+            }
+        }
+      }, 1000);
+    },
+    handleKeyPress: function () {
+      let debounceTimeout = null;
+      const debounceDelay = 800;
+  
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "t") {
+          if (!debounceTimeout) {
+            this.feed();
+            debounceTimeout = setTimeout(() => {
+              debounceTimeout = null;
+            }, debounceDelay);
+
+            // updating the lastKeyPressTime with current time
+            this.lastKeyPressTime = Date.now();
+            console.log("last key press time: ", this.lastKeyPressTime);
+
+            this.meowSoundInterval = setInterval(this.meow, 5000);
+          }
+        }
+        else if(e.key === "p" || e.key === "g"){
+            clearInterval(this.meowSoundInterval);
+            this.meowSoundInterval = null;
+            console.log("SOUND REMOVEDDDDDDD");
+        }
+      });
+    },
+    feed: function () {
+      var kittyTreat = document.createElement("a-entity");
+      kittyTreat.setAttribute("geometry", {
+        primitive: "sphere",
+        radius: 0.05,
+      });
+      kittyTreat.setAttribute("material", "color", "#8f6d50");
+      kittyTreat.setAttribute("position", { x: 0, y: 1, z: -0.8 });
+  
+      var camera = document.querySelector("#camera").object3D;
+  
+      // getting camera direction as Three.js vector
+      var direction = new THREE.Vector3();
+      camera.getWorldDirection(direction);
+  
+      // setting velocity and its direction
+      kittyTreat.setAttribute("velocity", direction.multiplyScalar(-5));
+  
+      var mainScene = document.querySelector("#mainScene");
+  
+      // setting kitty treat as a dynamic body
+      kittyTreat.setAttribute("dynamic-body", {
+        shape: "sphere",
+        mass: "0",
+      });
+  
+      // adding collide event with kitty treat
+      kittyTreat.addEventListener("collide", (e) => {
+        this.removeTreat(e);
+      });
+  
+      mainScene.appendChild(kittyTreat);
     },
     removeTreat: function(e){
         var element = e.detail.target.el;
@@ -54,7 +107,7 @@ AFRAME.registerComponent("feed", {
             elementHit.body.applyImpulse(impulse, worldPoint);
 
             // remove event listener
-            element.removeEventListener("collide", this.removeTreat);
+            element.removeEventListener("collide", this.removeTreat.bind(this));
 
             // playing meow sound effect
             this.meow();
@@ -66,20 +119,62 @@ AFRAME.registerComponent("feed", {
     },
     meow: function(){
         var sound = new Howl({
-            src: ['./assets/Short-meow-sound-effect.mp3'],
+            src: ['./assets/meow.mp3'],
             autoplay: false,
             loop: false,
             volume: 0.5
         });
 
         sound.play();
+    },
+    angryMeow: function(){
+        var sound = new Howl({
+            src: ['./assets/angry_meow.mp3'],
+            autoplay: false,
+            loop: false,
+            volume: 0.5
+        });
+        sound.play();
     }
 });
 
 AFRAME.registerComponent("pet", {
     init: function(){
-        window.addEventListener("keydown", function(e){
-            if(e.key === "p"){
+        // initializing the lastKeyPressTime property
+        this.lastKeyPressTime = null;
+
+        this.meowSoundInterval = null;
+        this.angryMeowSoundInterval = null;
+
+        setInterval(() => {
+            if(this.lastKeyPressTime !== null){
+                var currentTime = Date.now();
+                var elapsedTime = currentTime - this.lastKeyPressTime;
+                console.log("elasped time: ", elapsedTime);
+
+                // defining threshold duration in milliseconds
+                var threshold = 120000;
+
+                // checking if elapsed time > threshold
+                if(elapsedTime > threshold){
+                    if(!this.angryMeowSoundInterval){
+                        this.angryMeowSoundInterval = setInterval(this.angryMeow, 8000);
+                    }
+
+                    document.querySelector("#upset_kitty").setAttribute("visible", true);
+                    document.querySelector("#main_kitty").setAttribute("visible", false);
+                }
+                else{
+                    document.querySelector("#upset_kitty").setAttribute("visible", false);
+                    document.querySelector("#main_kitty").setAttribute("visible", true);  
+                }
+            }
+        }, 1000);
+
+        window.addEventListener("keydown", (e) => {
+            if(e.key === "p" && document.querySelector("#pet").getAttribute("material").color === "#2a79f7"){
+                this.lastKeyPressTime = Date.now();
+
                 // setting initial position and rotation
                 var cursor = document.querySelector("#custom_cursor");
 
@@ -101,30 +196,86 @@ AFRAME.registerComponent("pet", {
                         dir: cursor.getAttribute("attribute").dir === "normal" ? "reverse" : "normal"
                     });
                 });
+
+                this.meowSoundInterval = setInterval(this.meow, 5000);
+            }
+            else if(e.key === "g" && document.querySelector("#groom").getAttribute("material").color === "#2a79f7"){
+                clearInterval(this.meowSoundInterval);
+                this.meowSoundInterval = null;
+            }
+            else if(e.key === "t" && !document.querySelector("#upset_kitty").getAttribute("visible")){
+                clearInterval(this.meowSoundInterval);
+                this.meowSoundInterval = null;
             }
         });
     },
     meow: function(){
         var sound = new Howl({
-            src: ['./assets/Short-meow-sound-effect.mp3'],
+            src: ['./assets/meow.mp3'],
             autoplay: false,
             loop: false,
             volume: 0.5
         });
-
+        sound.play();
+    },
+    angryMeow: function(){
+        var sound = new Howl({
+            src: ['./assets/angry_meow.mp3'],
+            autoplay: false,
+            loop: false,
+            volume: 0.5
+        });
         sound.play();
     }
 });
 
 AFRAME.registerComponent("groom", {
     init: function(){
-        window.addEventListener("keydown", function(e){
-            if(e.key === "g"){
+        // initializing the lastKeyPressTime property
+        this.lastKeyPressTime = null;
+
+        this.meowSoundInterval = null;
+
+        setInterval(() => {
+            if(this.lastKeyPressTime !== null){
+                var currentTime = Date.now();
+                var elapsedTime = currentTime - this.lastKeyPressTime;
+
+                // defining threshold duration in milliseconds
+                var threshold = 120000;
+
+                // checking if elapsed time > threshold
+                if(elapsedTime > threshold){
+                    setInterval(() => {
+                        var sound = new Howl({
+                            src: ['./assets/angry_meow.mp3'],
+                            autoplay: false,
+                            loop: false,
+                            volume: 0.5
+                        });
+                        sound.play();
+                    }, 5000);
+
+                    document.querySelector("#upset_kitty").setAttribute("visible", true);
+                    document.querySelector("#main_kitty").setAttribute("visible", false);
+                }
+                else{
+                    document.querySelector("#upset_kitty").setAttribute("visible", false);
+                    document.querySelector("#main_kitty").setAttribute("visible", true);  
+                }
+            }
+        }, 1000);
+
+        window.addEventListener("keydown", (e) => {
+            if(e.key === "g" && document.querySelector("#groom").getAttribute("material").color === "#2a79f7"){
+                this.lastKeyPressTime = Date.now();
+
                 var brush = document.querySelector("#brush_model");
 
                 // defining animation for moving front and back
                 brush.setAttribute("animation", {
                     property: "position",
+                    dur: 1000,
                     from: "0 0.2 -1.7",
                     to: "0 0.2 -2.1",
                     easing: "easeInOutQuad",
@@ -140,12 +291,14 @@ AFRAME.registerComponent("groom", {
                 });
 
                 var cursor = document.querySelector("#custom_cursor");
+                //cursor.components.animation.play();
 
                 // defining animation for moving front and back
                 cursor.setAttribute("animation", {
                     property: "position",
+                    dur: 1000,
                     from: "0 0 -1",
-                    to: "0 0 -1.3",
+                    to: "0 0 -1.4",
                     easing: "easeInOutQuad",
                     loop: true,
                     dir: "alternate"
@@ -157,17 +310,26 @@ AFRAME.registerComponent("groom", {
                         dir: cursor.getAttribute("attribute").dir === "normal" ? "reverse" : "normal"
                     });
                 });
+
+                this.meowSoundInterval = setInterval(this.meow, 5000);
+            }
+            else if(e.key === "t" && !document.querySelector("#upset_kitty").getAttribute("visible")){
+                clearInterval(this.meowSoundInterval);
+                this.meowSoundInterval = null;
+            }
+            else if(e.key === "p" && document.querySelector("#pet").getAttribute("material").color === "#2a79f7"){
+                clearInterval(this.meowSoundInterval);
+                this.meowSoundInterval = null;
             }
         });
     },
     meow: function(){
         var sound = new Howl({
-            src: ['./assets/Short-meow-sound-effect.mp3'],
+            src: ['./assets/meow.mp3'],
             autoplay: false,
             loop: false,
             volume: 0.5
         });
-
         sound.play();
     }
 });

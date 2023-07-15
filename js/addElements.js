@@ -78,7 +78,7 @@ AFRAME.registerComponent("create-buttons", {
 
         const camera = document.querySelector("#camera");
 
-        var previousYPosition = 1.65;
+        var previousYPosition = 1.75;
 
         for(var item of images){
             const posX = 2.25;

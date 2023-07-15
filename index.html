@@ -2,12 +2,17 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>VR Cat Game</title>
+        <title>Kitty Simulator</title>
 
         <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
         <script src="https://unpkg.com/aframe-event-set-component@4.2.1/dist/aframe-event-set-component.min.js"></script>
         <script src="https://cdn.jsdelivr.net/gh/n5ro/aframe-physics-system@v4.0.1/dist/aframe-physics-system.min.js"></script>
         <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
+
+        <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&family=Gamja+Flower&display=swap" rel="stylesheet">
+
+        <!-- Sweetalert -->
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
         <!-- The core Firebase JS SDK is always required and must be listed first -->
         <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-app.js"></script>
@@ -39,29 +44,73 @@
     </head>
 
     <body>
-        <a-scene id="mainScene" add-element>
-            <script>
-                AFRAME.registerComponent("play-music", {
-                    init: function(){
-                        var sound = new Howl({
-                            src: ['./assets/bg_music.mp3'],
-                            autoplay: true,
-                            loop: true,
-                            volume: 1
-                        });
-                        sound.play();
-                    }
-                });
-            </script>
+        <script>
+            AFRAME.registerComponent("play-music", {
+                init: function(){
+                    var sound = new Howl({
+                        src: ['./assets/bg_music.mp3'],
+                        autoplay: true,
+                        loop: true,
+                        volume: 1
+                    });
+                    sound.play();
+                }
+            });
+
+            AFRAME.registerComponent("instructions", {
+                init: function(){
+                    var iconUrl = "https://media2.giphy.com/media/m1JXWJGM3SRsXHgXaK/giphy.gif?cid=6c09b952n82kazua2og9z86gz0xk99swxgk9fvhk86kq4lcb&ep=v1_stickers_related&rid=giphy.gif&ct=s"; // add rawgithub url here
+
+                    swal({
+                        title: "Welcome! Here's How to Play:",
+                        buttons: {
+                            cancel: "Let's go!"
+                        },
+                        text: "1. Kitty gets hangry quite fast, so press '1' to begin feeding her! \n \n 2. Kitty loves being petted, so press '2' to experience petting her! \n \n 3. Every cat needs to be groomed well, and our Kitty also deserves that. Press '3' to groom!",
+                        icon: iconUrl,
+                        closeOnClickOutside: false
+                    });
+                }
+            });
+        </script>
+
+        <a-scene id="mainScene" add-element look-controls>
+            <style>
+                .swal-text{
+                    font-size: 20px;
+                    font-family: 'Gamja Flower', cursive;
+                    color: #c5ac97;
+                }
+
+                .swal-title{
+                    font-size: 30px;
+                    font-family: 'Cherry Bomb One', cursive;
+                    color: #92745c;
+                }
+
+                .swal-button{
+                    font-size: 18px;
+                    font-family: 'Cherry Bomb One', cursive;
+                    color: #92745c;
+                }
+
+                .swal-icon{
+                    width: 150px;
+                    height: 150px;
+                }
+            </style>
 
             <!-- Sounds -->
             <a-entity play-music></a-entity>
+
+            <!-- Sweet Alert -->
+            <a-entity instructions></a-entity>
 
             <!-- Kitty Treats -->
             <a-entity feed></a-entity>
             
             <!-- Camera -->
-            <a-camera id="camera" position="0 1.3 0" create-buttons>
+            <a-camera id="camera" position="0 1.3 0" create-buttons wasd-controls="enabled: false">
                 <a-image id="custom_cursor" src="https://raw.githubusercontent.com/exersonz/vr-cat-game-assets/main/hand.png" position="0 0 -1" width="0.15" height="0.15"></a-image>
                 <a-entity id="actionContainer" activate-tool add-tool></a-entity>
             </a-camera>

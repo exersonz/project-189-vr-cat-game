@@ -11,6 +11,11 @@ AFRAME.registerComponent("activate-tool", {
         const buttons = Array.from(cameraEl.children).filter((node) => node.nodeType === Node.ELEMENT_NODE);
         console.log("button array: ", buttons);
 
+        // variable to store the current active tool
+        let activeTool;
+        const cursor = document.querySelector("#custom_cursor");
+        const cursorAnimation = cursor.components.animation;
+
         // listening for key press event on document
         document.addEventListener("keydown", function(event){
             // getting the lowercase value of pressed key
@@ -28,10 +33,41 @@ AFRAME.registerComponent("activate-tool", {
                 const clickedButtonId = idMapping[key];
                 console.log("clicked button id: ", clickedButtonId);
 
-                // using some array method on buttons array to check if any button has the same id as clicked button id
+                // using some() array method on buttons array to check if any button has the same id as clicked button id
                 if(buttons.some((button) => button.getAttribute("id") === clickedButtonId)){
+                    // pausing previous active tool's animation (if any)
+                    if(activeTool && activeTool !== clickedButtonId){
+                        const previousButton = document.querySelector(`#${activeTool}`);
+                        console.log("previous button: ", previousButton);
+                        previousButton.setAttribute("material", {
+                            color: "#84a98a",
+                            opacity: 0.6
+                        });
+
+                        if(activeTool === "pet" || activeTool === "groom" || activeTool === "feed"){
+                            // pausing cursor animation
+                            if(cursorAnimation){
+                                cursorAnimation.pause();
+                            }
+                        }
+                    }
+
+                    // setting new active tool
+                    activeTool = clickedButtonId;
+                    console.log("active tool: ", activeTool);
+
+                    // handling individual tool interactions
                     if(clickedButtonId === "feed"){
-                        alert("Feeding tool activated. Press 't' to feed kitty some treats!");
+                        var iconUrl = "https://raw.githubusercontent.com/exersonz/vr-cat-game-assets/main/food.png";
+                        swal({
+                            text: "Press 't' to feed kitty treats!",
+                            icon: iconUrl,
+                            buttons: {
+                                cancel: "Got it!"
+                            },
+                            closeOnClickOutside: false
+                        });
+
                         document.querySelector("#feed").setAttribute("material", {
                             color: "#2a79f7",
                             opacity: 0.6
@@ -48,9 +84,21 @@ AFRAME.registerComponent("activate-tool", {
                         document.querySelector("#cat_food_model").setAttribute("visible", true);
                         document.querySelector("#main_kitty").setAttribute("static-body", {});
                         document.querySelector("#brush_model").setAttribute("visible", false);
+
+                        const cursor = document.querySelector("#custom_cursor");
+                        cursor.setAttribute("position", {x: 0, y: 0, z: -1});
                     }
                     else if(clickedButtonId === "pet"){
-                        alert("Petting mode activated. Press 'p' to pet kitty!");
+                        var iconUrl = "https://raw.githubusercontent.com/exersonz/vr-cat-game-assets/main/pet.png";
+                        swal({
+                            text: "Press 'p' to pet kitty!",
+                            icon: iconUrl,
+                            buttons: {
+                                cancel: "Got it!"
+                            },
+                            closeOnClickOutside: false
+                        });
+                        
                         document.querySelector("#pet").setAttribute("material", {
                             color: "#2a79f7",
                             opacity: 0.6
@@ -66,10 +114,21 @@ AFRAME.registerComponent("activate-tool", {
 
                         document.querySelector("#cat_food_model").setAttribute("visible", false);
                         document.querySelector("#brush_model").setAttribute("visible", false);
-                        document.querySelector("#custom_cursor").setAttribute("pet", {});
+
+                        const cursor = document.querySelector("#custom_cursor");
+                        cursor.setAttribute("position", {x: 0, y: 0, z: -1});
+                        cursor.setAttribute("pet", {});
                     }
                     else if(clickedButtonId === "groom"){
-                        alert("Grooming tool activated. Press 'g' to begin grooming kitty!");
+                        var iconUrl = "https://raw.githubusercontent.com/exersonz/vr-cat-game-assets/main/groom.png";
+                        swal({
+                            text: "Press 'g' to groom kitty! ",
+                            icon: iconUrl,
+                            buttons: {
+                                cancel: "Got it!"
+                            },
+                            closeOnClickOutside: false
+                        });
                         document.querySelector("#groom").setAttribute("material", {
                             color: "#2a79f7",
                             opacity: 0.6
@@ -84,12 +143,22 @@ AFRAME.registerComponent("activate-tool", {
                         });
 
                         document.querySelector("#cat_food_model").setAttribute("visible", false);
-                        document.querySelector("#brush_model").setAttribute("visible", true);
-                        document.querySelector("#brush_model").setAttribute("rotation", {x: 15, y: 0, z: 180});
-                        document.querySelector("#brush_model").setAttribute("groom", {});
+
+                        const brush = document.querySelector("#brush_model");
+                        brush.setAttribute("rotation", {x: 15, y: 0, z: 180});
+                        brush.setAttribute("groom", {});
+                        brush.setAttribute("visible", true);
+                    }
+                    else if(clickedButtonId === "feed" || clickedButtonId === "pet"){
+                        cursor.setAttribute("position", {x: 0, y: 0, z: -1});
+
+                        const brushAnimation = brush.components.animation;
+                        if(brushAnimation){
+                            brushAnimation.pause();
+                        }
                     }
                 }
             }
-        })
+        });
     }
 });
