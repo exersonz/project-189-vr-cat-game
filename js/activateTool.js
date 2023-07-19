@@ -11,11 +11,6 @@ AFRAME.registerComponent("activate-tool", {
         const buttons = Array.from(cameraEl.children).filter((node) => node.nodeType === Node.ELEMENT_NODE);
         console.log("button array: ", buttons);
 
-        // variable to store the current active tool
-        let activeTool;
-        const cursor = document.querySelector("#custom_cursor");
-        const cursorAnimation = cursor.components.animation;
-
         // listening for key press event on document
         document.addEventListener("keydown", function(event){
             // getting the lowercase value of pressed key
@@ -35,32 +30,11 @@ AFRAME.registerComponent("activate-tool", {
 
                 // using some() array method on buttons array to check if any button has the same id as clicked button id
                 if(buttons.some((button) => button.getAttribute("id") === clickedButtonId)){
-                    // pausing previous active tool's animation (if any)
-                    if(activeTool && activeTool !== clickedButtonId){
-                        const previousButton = document.querySelector(`#${activeTool}`);
-                        console.log("previous button: ", previousButton);
-                        previousButton.setAttribute("material", {
-                            color: "#84a98a",
-                            opacity: 0.6
-                        });
-
-                        if(activeTool === "pet" || activeTool === "groom" || activeTool === "feed"){
-                            // pausing cursor animation
-                            if(cursorAnimation){
-                                cursorAnimation.pause();
-                            }
-                        }
-                    }
-
-                    // setting new active tool
-                    activeTool = clickedButtonId;
-                    console.log("active tool: ", activeTool);
-
                     // handling individual tool interactions
                     if(clickedButtonId === "feed"){
                         var iconUrl = "https://raw.githubusercontent.com/exersonz/vr-cat-game-assets/main/food.png";
                         swal({
-                            text: "Press 't' to feed kitty treats!",
+                            text: "Press 'f' to feed kitty treats!",
                             icon: iconUrl,
                             buttons: {
                                 cancel: "Got it!"
@@ -85,8 +59,47 @@ AFRAME.registerComponent("activate-tool", {
                         document.querySelector("#main_kitty").setAttribute("static-body", {});
                         document.querySelector("#brush_model").setAttribute("visible", false);
 
-                        const cursor = document.querySelector("#custom_cursor");
-                        cursor.setAttribute("position", {x: 0, y: 0, z: -1});
+                        const petCursor = document.querySelector("#custom_cursor_pet");
+                        const groomCursor = document.querySelector("#custom_cursor_groom");
+                        const feedCursor = document.querySelector("#custom_cursor");
+
+                        // using the feed components toolState all across my other functions so don't be confused
+                        // using feedEntity doesn't mean it only applies to feed!!!
+                        var feedEntity = document.querySelector("#feedEntity").getAttribute("feed");
+                        console.log(feedEntity);
+                        document.querySelector("#feedEntity").setAttribute("feed", {
+                            toolState: "feedState"
+                        });
+                        var currentToolState = document.querySelector("#feedEntity").getAttribute("feed")["toolState"];
+                        console.log("tool state when 1 is pressed: ", currentToolState);
+                        
+                        var currentCatState = document.querySelector("#feedEntity").getAttribute("feed")["catState"];
+                        console.log("cat state: ", currentCatState);
+
+                        if(currentToolState === "feedState"){
+                            feedCursor.setAttribute("visible", true);
+                            groomCursor.setAttribute("visible", false);
+                            petCursor.setAttribute("visible", false);
+
+                            const petCursorAnimation = petCursor.components.animation;
+                            const groomCursorAnimation = groomCursor.components.animation;
+
+                            const brush = document.querySelector("#brush_model");
+                            const brushAnimation = brush.components.animation;
+
+                            // pausing pet cursor animation
+                            if(petCursorAnimation){
+                                petCursorAnimation.pause();
+                                console.log("PAUSE PET ANIMATION PLSSSS");
+                            }
+                            if(groomCursorAnimation){
+                                groomCursorAnimation.pause();
+                                console.log("PAUSE GROOM ANIMATION PLSSSS");
+                            }
+                            if(brushAnimation){
+                                brushAnimation.pause();
+                            }
+                        }
                     }
                     else if(clickedButtonId === "pet"){
                         var iconUrl = "https://raw.githubusercontent.com/exersonz/vr-cat-game-assets/main/pet.png";
@@ -115,9 +128,46 @@ AFRAME.registerComponent("activate-tool", {
                         document.querySelector("#cat_food_model").setAttribute("visible", false);
                         document.querySelector("#brush_model").setAttribute("visible", false);
 
-                        const cursor = document.querySelector("#custom_cursor");
-                        cursor.setAttribute("position", {x: 0, y: 0, z: -1});
-                        cursor.setAttribute("pet", {});
+                        const groomCursor = document.querySelector("#custom_cursor_groom");
+                        const feedCursor = document.querySelector("#custom_cursor");
+                        const petCursor = document.querySelector("#custom_cursor_pet");
+                        petCursor.setAttribute("pet", {});
+
+                        var feedEntity = document.querySelector("#feedEntity").getAttribute("feed");
+                        console.log(feedEntity);
+                        document.querySelector("#feedEntity").setAttribute("feed", {
+                            toolState: "petState"
+                        });
+                        var currentToolState = document.querySelector("#feedEntity").getAttribute("feed")["toolState"];
+                        console.log("tool state when 2 is pressed: ", currentToolState);
+
+                        var currentCatState = document.querySelector("#feedEntity").getAttribute("feed")["catState"];
+                        console.log("cat state: ", currentCatState);
+
+                        if(currentToolState === "petState"){
+                            feedCursor.setAttribute("visible", false);
+                            groomCursor.setAttribute("visible", false);
+                            petCursor.setAttribute("visible", true);
+
+                            const groomCursorAnimation = groomCursor.components.animation;
+                            const petCursorAnimation = petCursor.components.animation;
+
+                            const brush = document.querySelector("#brush_model");
+                            const brushAnimation = brush.components.animation;
+
+                            if(petCursorAnimation){
+                                petCursorAnimation.pause();
+                                console.log("PAUSE PET ANIMATION PLSSSS");
+                            }
+                            if(groomCursorAnimation){
+                                groomCursorAnimation.pause();
+                                console.log("PAUSE GROOM ANIMATION PLSSSS");
+                                groomCursor.setAttribute("position", {x: 0, y: 0, z: -1});
+                            }
+                            if(brushAnimation){
+                                brushAnimation.pause();
+                            }
+                        }
                     }
                     else if(clickedButtonId === "groom"){
                         var iconUrl = "https://raw.githubusercontent.com/exersonz/vr-cat-game-assets/main/groom.png";
@@ -148,16 +198,75 @@ AFRAME.registerComponent("activate-tool", {
                         brush.setAttribute("rotation", {x: 15, y: 0, z: 180});
                         brush.setAttribute("groom", {});
                         brush.setAttribute("visible", true);
-                    }
-                    else if(clickedButtonId === "feed" || clickedButtonId === "pet"){
-                        cursor.setAttribute("position", {x: 0, y: 0, z: -1});
 
-                        const brushAnimation = brush.components.animation;
-                        if(brushAnimation){
-                            brushAnimation.pause();
+                        const petCursor = document.querySelector("#custom_cursor_pet");
+                        const groomCursor = document.querySelector("#custom_cursor_groom");
+                        const feedCursor = document.querySelector("#custom_cursor");
+
+                        var feedEntity = document.querySelector("#feedEntity").getAttribute("feed");
+                        console.log(feedEntity);
+                        document.querySelector("#feedEntity").setAttribute("feed", {
+                            toolState: "groomState"
+                        });
+                        var currentToolState = document.querySelector("#feedEntity").getAttribute("feed")["toolState"];
+                        console.log("tool state when 3 is pressed: ", currentToolState);
+
+                        if(currentToolState === "groomState"){
+                            feedCursor.setAttribute("visible", false);
+                            petCursor.setAttribute("visible", false);
+                            groomCursor.setAttribute("visible", true);
+
+                            const petCursorAnimation = petCursor.components.animation;
+                            const groomCursorAnimation = groomCursor.components.animation;
+
+                            // pausing pet cursor animation
+                            if(petCursorAnimation){
+                                petCursorAnimation.pause();
+                                console.log("PAUSE PET ANIMATION PLSSSS");
+                                petCursor.setAttribute("position", {x: -0.2, y: 0, z: -1});
+                            }
+                            if(groomCursorAnimation){
+                                groomCursorAnimation.pause();
+                                console.log("PAUSE GROOM ANIMATION PLSSSS");
+                                groomCursor.setAttribute("position", {x: 0, y: 0, z: -0.8});
+                            }
                         }
                     }
                 }
+            }
+
+            var currentCatState = document.querySelector("#feedEntity").getAttribute("feed")["catState"];
+            console.log("cat state: ", currentCatState);
+
+            if(currentCatState === "angry"){
+                feedCursor.setAttribute("visible", true);
+                groomCursor.setAttribute("visible", false);
+                petCursor.setAttribute("visible", false);
+
+                const petCursorAnimation = petCursor.components.animation;
+                const groomCursorAnimation = groomCursor.components.animation;
+
+                const brush = document.querySelector("#brush_model");
+                const brushAnimation = brush.components.animation;
+
+                // pausing pet cursor animation
+                if(petCursorAnimation){
+                    petCursorAnimation.pause();
+                    console.log("PAUSE PET ANIMATION PLSSSS");
+                }
+                if(groomCursorAnimation){
+                    groomCursorAnimation.pause();
+                    console.log("PAUSE GROOM ANIMATION PLSSSS");
+                }
+                if(brushAnimation){
+                    brushAnimation.pause();
+                }
+
+                swal("Oh no, kitty has become angry!", {
+                   buttons: {
+                       cancel: true
+                   } 
+                });
             }
         });
     }

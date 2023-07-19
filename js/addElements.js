@@ -31,7 +31,6 @@ AFRAME.registerComponent("add-tool", {
         var tools = await this.getTools();
 
         tools.map(tool => {
-            // creating 3D cat model and cute room model
             var model = document.createElement("a-entity");
             model.setAttribute("id", tool.id);
             model.setAttribute("gltf-model", tool.gltf_model_url);

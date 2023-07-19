@@ -38,7 +38,10 @@
 
         <script src="./js/addElements.js"></script>
         <script src="./js/activateTool.js"></script>
-        <script src="./js/toolFunction.js"></script>
+        <script src="./js/feed.js"></script>
+        <script src="./js/pet.js"></script>
+        <script src="./js/groom.js"></script>
+        <script src="./js/addText.js"></script>
 
         <script src="./howler/howler.min.js"></script>
     </head>
@@ -107,12 +110,41 @@
             <a-entity instructions></a-entity>
 
             <!-- Kitty Treats -->
-            <a-entity feed></a-entity>
+            <a-entity id="feedEntity" feed></a-entity>
             
             <!-- Camera -->
             <a-camera id="camera" position="0 1.3 0" create-buttons wasd-controls="enabled: false">
-                <a-image id="custom_cursor" src="https://raw.githubusercontent.com/exersonz/vr-cat-game-assets/main/hand.png" position="0 0 -1" width="0.15" height="0.15"></a-image>
+                <a-image 
+                    id="custom_cursor" 
+                    src="https://raw.githubusercontent.com/exersonz/vr-cat-game-assets/main/hand.png" 
+                    position="0 0 -1" 
+                    width="0.15" 
+                    height="0.15"
+                    visible="true">
+                </a-image>
+
+                <a-image 
+                    id="custom_cursor_pet" 
+                    src="https://raw.githubusercontent.com/exersonz/vr-cat-game-assets/main/hand.png" 
+                    position="0 0 -1" 
+                    width="0.15" 
+                    height="0.15" 
+                    visible="false"
+                    animation="property: position; dur: 2000; from: -0.2 0 -1; to: 0.2 0 -1; easing: easeInOutQuad; loop: true; dir: alternate">
+                </a-image>
+
+                <a-image 
+                    id="custom_cursor_groom" 
+                    src="https://raw.githubusercontent.com/exersonz/vr-cat-game-assets/main/hand.png" 
+                    position="0 0 0" 
+                    width="0.15" 
+                    height="0.15" 
+                    visible="false"
+                    animation="property: position; dur: 1000; from: 0 0 -0.8; to: 0 0 -1.2 easing: easeInOutQuad; loop: true; dir: alternate">
+                </a-image>
+
                 <a-entity id="actionContainer" activate-tool add-tool></a-entity>
+                <a-entity id="textContainer" visible="false" add-text></a-entity>
             </a-camera>
         </a-scene>
     </body>
